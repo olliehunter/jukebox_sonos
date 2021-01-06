@@ -1,10 +1,12 @@
+console.log('opened the file!!!!!!')
+
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const auth = require('basic-auth');
 const SonosSystem = require('sonos-discovery');
 const logger = require('sonos-discovery/lib/helpers/logger');
-const SonosHttpAPI = require('./lib/sonos-http-api.js');
+const SonosHttpAPI = require('./lib/sonos-http-api');
 const nodeStatic = require('node-static');
 const settings = require('./settings');
 
