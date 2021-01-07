@@ -1,5 +1,3 @@
-console.log('opened the file!!!!!!')
-
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
