@@ -8,15 +8,9 @@
         <b-row class="mx-auto">
           <h2>waiting for a jukebox to be created...</h2>
         </b-row>
-        <b-row class="mx-auto">
-          <p>While we wait...</p>
-          <p>currently your name is <b>{{requestorName}}</b></p>
+          <p>While we wait...currently your name is <b>{{requestorName}}</b></p>
           <p>if you want to, you can enter a new name here:</p>
-          <b-input type="text" v-model="newName"></b-input>
-          <b-button variant="primary" @click="setNewName(newName)">
-            Set Name
-          </b-button>
-        </b-row>
+          <ChangeName></ChangeName>
       </b-container> 
       
     </div>
@@ -25,9 +19,13 @@
 
 <script>
 // @ is an alias to /src
+import ChangeName from '@/components/ChangeName'
 
 export default {
   name: 'Home',
+  components:{
+    ChangeName
+  },
   computed:{
     jukeboxCreated: {
       get() {return this.$store.getters.getJukeboxActive}

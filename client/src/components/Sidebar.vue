@@ -7,10 +7,10 @@
       <b-sidebar id="sidebar-1" title="Menu" bg-variant="dark" text-variant="light" shadow width="50%" z-index="10">
         <div class="px-3 py-2">
           <p><router-link to="/">Home</router-link></p>
-          <p><router-link to="/Search">Search</router-link></p>
+          <p v-show="jukeboxOnline"><router-link to="/Search">Search</router-link></p>
           <p></p>
           <p></p>
-          <p v-show="this.$store.getters.getDebug"><router-link to="/Debug">Debug</router-link></p>
+          <p v-show="debug"><router-link to="/Debug">Debug</router-link></p>
         </div>
         <template #footer="{}">
        <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
@@ -36,7 +36,9 @@ export default {
     },
     wsServerOnline: {
       get() { return this.$store.getters.getWSStatus},
-      // set(value) { this.$store.dispatch('setWSStatus', value)}
+    },
+    jukeboxOnline: {
+      get() {return this.$store.getters.getJukeboxActive}
     }
   }
 }
