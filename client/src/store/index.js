@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     config: {
-      version: "0.0.0.2",
+      version: "0.0.0.7",
       name: "Jukebox",
       wsServer: "homeassistant" || process.env.WSSERVER,
       wsPort: 3001 || process.env.WSPORT,

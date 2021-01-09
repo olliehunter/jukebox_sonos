@@ -81,7 +81,7 @@ export default {
     },
     methods: {
         search() {
-            axios.get("https://itunes.apple.com/search?term=" + this.searchTerm +"&entity=musicTrack&attribute=artistTerm").then(resp => {
+            axios.get("https://itunes.apple.com/search?term=" + this.searchTerm +"&country=GB&entity=musicTrack&attribute=artistTerm").then(resp => {
                 this.searchResults = resp.data.results;
                 this.showResults = true
             }).catch(err => {
