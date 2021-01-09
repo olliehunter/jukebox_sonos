@@ -28,7 +28,7 @@
                   <q-item-section>Search</q-item-section>
                 </q-item>
                 <q-separator></q-separator>
-                <q-item v-show="debugSwitch" clickable v-ripple><q-item-section avatar>
+                <q-item v-show="debugSwitch" clickable v-ripple to="debug"><q-item-section avatar>
                         <q-icon name="bug_report"></q-icon>
                     </q-item-section>
                     <q-item-section>Debug</q-item-section>
