@@ -3,7 +3,10 @@
    <q-layout class="q-pa-md">
     <Sidebar></Sidebar>
     <q-page-container >
-      <router-view></router-view>
+      <router-view 
+        @createJukebox="createJukebox"
+        @addSong="addSong"
+      />
     </q-page-container>
    </q-layout>
   </div>
@@ -33,12 +36,37 @@ export default {
     wsConnect(){
         this.addDebugLog("Client is connecting to WS Server")
         this.clientWebsocket = new WebSocket("ws://" + this.$store.getters.getWSServer + ":" + this.$store.getters.getWSPort);
+    },
+    createJukebox(payload){
+      console.log("Jukebox Name: " + payload.jukeboxName)
+      console.log("primary speaker: " + payload.primarySpeaker);
+      console.log("secondary speaker(s): " + payload.secondarySpeakers.length);
+      this.clientWebsocket.send(JSON.stringify(
+        {
+          request: "createJukebox",
+          data: {
+            name: payload.jukeboxName,
+            primary: payload.primarySpeaker,
+            secondary: payload.secondarySpeakers
+          }
+        }
+      ))
+    },
+    addSong(payload){
+      this.clientWebsocket.send(JSON.stringify(
+        {
+          request: "addSong",
+          data: payload
+        }
+      ));
+      console.log(payload);
     }
   },
   created() {
     this.wsConnect();
     this.clientWebsocket.onmessage = (event) => {
       this.addDebugLog(event.data);
+      this.$store.dispatch('setJukebox', JSON.parse(event.data))
     };
     this.clientWebsocket.onopen = (event) => {
       clearInterval(this.reconnectInterval);
@@ -56,6 +84,7 @@ export default {
       this.$store.dispatch('setWSStatus', false);
       this.addDebugLog("Connection Closed:" + event);
     }
+    //this.clientWebSocket.send("test message")
   }
 }
 </script>

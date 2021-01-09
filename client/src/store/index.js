@@ -8,11 +8,11 @@ export default new Vuex.Store({
     config: {
       version: "0.0.0.2",
       name: "Jukebox",
-      wsServer: "homeassistant",
-      wsPort: "3001",
+      wsServer: "localhost" || process.env.WSSERVER,
+      wsPort: 3001 || process.env.WSPORT,
       wsConnected: false,
-      apiServer: "homeassistant",
-      apiPort: 5005
+      apiServer: "localhost" || process.env.APIPORT,
+      apiPort: 5005 || process.env.APIPORT
     },
     jukebox: {
       jukeboxCreated: false,
@@ -23,6 +23,7 @@ export default new Vuex.Store({
         },
       playlist: [],
       clientList: [],
+      currentlyPlaying: {}
     },
     client: {
       ID: "",
@@ -69,7 +70,7 @@ export default new Vuex.Store({
       commit('setName', payload);
     },
     setJukebox({commit}, payload) {
-      commit('setJukebox', payload.jukebox);
+      commit('setJukebox', payload);
     },
     setSonosSystem({commit}, payload) {
       commit('setSonosSystem', payload.sonosSystem);
@@ -94,8 +95,14 @@ export default new Vuex.Store({
     getJukebox(state) {
       return state.jukebox;
     },
+    getJukeboxName(state) {
+      return state.jukebox.jukebox.name;
+    },
     getJukeboxActive(state) {
       return state.jukebox.jukeboxCreated;
+    },
+    getCurrentlyPlaying(state) {
+      return state.jukebox.currentlyPlaying;
     },
     getSonosSystem(state) {
       return state.sonosSystem;
@@ -111,6 +118,12 @@ export default new Vuex.Store({
     },
     getWSPort(state) {
       return state.config.wsPort;
+    },
+    getAPIServer(state) {
+      return state.config.apiServer;
+    },
+    getAPIPort(state) {
+      return state.config.apiPort;
     },
     getDebug(state) {
       return state.debug;

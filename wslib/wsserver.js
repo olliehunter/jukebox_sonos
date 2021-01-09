@@ -36,28 +36,31 @@ let wsServerData = {
   jukeboxCreated: false,
   jukebox: {
     name: "",
-    master: "",
+    primary: "",
     secondary: []
   },
   playlist: [],
   clientList: [],
+  currentlyPlaying: {}
 };
 
 //checkstatus and triggers
 function checkJukeboxStatus() {
+  //console.log(JSON.stringify(wsServerData));
   if (wsServerData.jukeboxCreated) {
-    axios.get('http://localhost:5005/' + wsServerData.jukebox.master + '/state').then(resp => {
+    axios.get('http://localhost:5005/' + wsServerData.jukebox.primary + '/state').then(resp => {
+      wsServerData.currentlyPlaying = resp.data;
       if (resp.data.playbackState === 'STOPPED') {
-        // console.log('jukebox has stopped - attempting to play next track!');
         eventEmitter.emit('jukeboxStopped');
       } else {
-        // console.log('jukebox is playing...');
+        console.log('jukebox is playing...');
       }
+      updateAllClients();
     }).catch(err => {
-      // console.log('error in status check...' + err);
+        console.log('error in status check...' + err);
     });
   } else {
-      console.log('jukebox not created');
+      //console.log('jukebox not created');
   }
 }
 
@@ -79,8 +82,11 @@ wsServer.on('connection', (socket, req) => {
   };
   socket.ID = ID;
   clients.push(socket);
-  wsServerData.clientList.push(ClientData);
-  socket.send(JSON.stringify(ClientData));
+  if (wsServerData.jukeboxCreated) {
+    socket.send(JSON.stringify(wsServerData));
+  }
+  //wsServerData.clientList.push(ClientData);
+  //socket.send(JSON.stringify(ClientData));
   console.log(wsServerData.clientList);
 
 
@@ -114,13 +120,13 @@ wsServer.on('connection', (socket, req) => {
         break;
       
       case 'createJukebox':
-        console.log('Creating new Jukebox called: ' + messageContent.name);
-        console.log('Master: ' + messageContent.master);
-        axios.get('http://localhost:5005/' + messageContent.master + '/state').then(resp => {
+        console.log('Creating new Jukebox called: ' + messageContent.data.name);
+        console.log('Primary: ' + messageContent.data.primary);
+        axios.get('http://localhost:5005/' + messageContent.data.primary + '/state').then(resp => {
           console.log('all ok here!');
-          axios.get('http://localhost:5005/' + messageContent.master + '/shuffle/off').then(resp => {
+          axios.get('http://localhost:5005/' + messageContent.data.primary + '/shuffle/off').then(resp => {
             console.log('shuffle disabled');
-            axios.get('http://localhost:5005/' + messageContent.master + '/clearqueue').then(resp => {
+            axios.get('http://localhost:5005/' + messageContent.data.primary + '/clearqueue').then(resp => {
               console.log('Queue Cleared');
             }).catch(err => {
               socket.send(`"error": "${err}"`);
@@ -132,10 +138,10 @@ wsServer.on('connection', (socket, req) => {
           socket.send(`"error": "${err}"`);
         });
 
-        console.log('Secondary: ' + messageContent.secondary);
-        if (messageContent.secondary) {
-          messageContent.secondary.forEach(speaker => {
-            axios.get('http://localhost:5005/' + messageContent.master + '/add/' + speaker).then(resp => {
+        console.log('Secondary: ' + messageContent.data.secondary);
+        if (messageContent.data.secondary) {
+          messageContent.data.secondary.forEach(speaker => {
+            axios.get('http://localhost:5005/' + messageContent.data.primary + '/add/' + speaker).then(resp => {
               console.log(`Added ${speaker} to the group!`);
               wsServerData.jukebox.secondary.push(speaker);
             }).catch(err => {
@@ -143,9 +149,11 @@ wsServer.on('connection', (socket, req) => {
             });
           });
         }
-        wsServerData.jukebox.name = messageContent.name;
-        wsServerData.jukebox.master = messageContent.master;
+        wsServerData.jukebox.name = messageContent.data.name;
+        wsServerData.jukebox.primary = messageContent.data.primary;
         wsServerData.jukeboxCreated = true;
+
+        updateAllClients();
         break;
       
       case 'deleteJukebox':
@@ -165,12 +173,14 @@ wsServer.on('connection', (socket, req) => {
       
       case 'addSong':
         let newSong = messageContent.data;
-        newSong.selectedby = ClientName;
+        // newSong.selectedby = ClientName;
         console.log(newSong);
         wsServerData.playlist.push(newSong);
         eventEmitter.emit('songAdded');
+        updateAllClients();
         break;
       default:
+        console.log(messageContent);
         break;
     }
   });
@@ -179,12 +189,42 @@ wsServer.on('connection', (socket, req) => {
 function evt_jukeboxStopped() {
     //play next song from playlist
     // help - [array.shift()] - removes first item in array
+  console.log('jukebox has stopped - attempting to play next track!');
+  if (wsServerData.playlist.length > 0) {
+    axios.get("http://localhost:5005/" + wsServerData.jukebox.primary + '/clearqueue')
+      .then(resp => {
+        console.log('Cleared the old track' + resp);
+        axios.get("http://localhost:5005/" + wsServerData.jukebox.primary + "/applemusic/now/song:" + wsServerData.playlist[0].trackId)
+          .then(resp => {
+            console.log(resp);
+            console.log('jukebox is now playing - ' + wsServerData.playlist[0].trackName);
+            wsServerData.playlist.shift();
+            updateAllClients();
+          }).catch(err => {
+            console.log(err);
+          });
+      }).catch(err => {
+        console.log("Couldn't clear the track" + err);
+      });
+  } else {
+    console.log('WARNING - The playlist is empty');
+  }
+  
+
+  
 }
 
 function evt_songAdded() {
   //notify all clients of the new playlist
   console.log('New Song Added: ' + wsServerData.playlist);
   console.log(wsServerData);
+}
+
+function updateAllClients() {
+  // send update to all clients
+        clients.forEach(function (client) {
+          client.send(JSON.stringify(wsServerData));
+        });
 }
 
 eventEmitter.on('jukeboxStopped', evt_jukeboxStopped);

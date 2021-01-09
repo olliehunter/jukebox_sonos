@@ -52,7 +52,7 @@
         </q-card-section>
         <q-separator />
         <q-card-actions align="right">
-          <q-btn v-close-popup flat color="primary" label="Queue this Track" @click="queueTrack(selectedTrack.trackId)" />
+          <q-btn v-close-popup flat color="primary" label="Queue this Track" @click="queueTrack(selectedTrack)" />
           <q-btn v-close-popup flat color="primary" icon="close" />
         </q-card-actions>
       </q-card>
@@ -98,9 +98,9 @@ export default {
             this.selectedTrack = data;
             this.card = true;
         },
-        queueTrack(id){
-            //MORE TO ADD HERE!!
-            console.log("Queueing Track " + id)
+        queueTrack(payload){
+            this.$emit('addSong', payload)
+            console.log("Queueing Track " + payload.trackId)
         }
     }
 }

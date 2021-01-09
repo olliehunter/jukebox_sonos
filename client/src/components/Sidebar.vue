@@ -21,7 +21,7 @@
                     </q-item-section>
                     <q-item-section>Home</q-item-section>
                 </q-item>
-                <q-item clickable v-ripple to="search">
+                <q-item v-show="this.$store.getters.getJukeboxActive" clickable v-ripple to="search">
                   <q-item-section avatar>
                       <q-icon name="search"></q-icon>
                   </q-item-section>
@@ -32,6 +32,11 @@
                         <q-icon name="bug_report"></q-icon>
                     </q-item-section>
                     <q-item-section>Debug</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple to="admin"><q-item-section avatar>
+                        <q-icon name="bug_report"></q-icon>
+                    </q-item-section>
+                    <q-item-section>Admin</q-item-section>
                 </q-item>
             </q-list>
         </q-scroll-area>
