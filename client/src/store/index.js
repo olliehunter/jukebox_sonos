@@ -11,7 +11,7 @@ export default new Vuex.Store({
       wsServer: "localhost" || process.env.WSSERVER,
       wsPort: 3001 || process.env.WSPORT,
       wsConnected: false,
-      apiServer: "localhost" || process.env.APIPORT,
+      apiServer: "localhost" || process.env.APISERVER,
       apiPort: 5005 || process.env.APIPORT
     },
     jukebox: {
