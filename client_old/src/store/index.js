@@ -117,9 +117,6 @@ export default new Vuex.Store({
     },
     getDebugLog(state) {
       return state.debuglog;
-    },
-    getAppVersion(state) {
-      return state.config.version;
     }
   },
   modules: {

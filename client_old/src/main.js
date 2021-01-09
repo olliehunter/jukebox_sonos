@@ -1,9 +1,13 @@
+import '@babel/polyfill';
+import 'mutationobserver-shim';
 import Vue from 'vue';
+import './plugins/bootstrap-vue';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import BootstrapVue from 'bootstrap-vue';
+import store from './store/index.js';
 import './quasar';
-import moment from 'moment';
+
 
 Vue.config.productionTip = false;
 
@@ -13,10 +17,4 @@ new Vue({
   render: h => h(App)
 }).$mount('#app');
 
-
-
-Vue.filter('formatDate', function (value) {
-  if (value) {
-    return moment(String(value)).format('DD/MM/YYYY');
-  }
-});
+Vue.use(BootstrapVue);

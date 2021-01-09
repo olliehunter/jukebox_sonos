@@ -1,23 +1,62 @@
 <template>
-  <div id="search">
-                <b-input type="text" placeholder="Type Here..." v-model="searchTerm" @keyup.enter.native="search"></b-input>
-                <b-button squared block variant="outline-success" @click="search">Search</b-button>
-                <b-button squared block variant="outline-warning" @click="clear">Clear</b-button>
-        <b-table hover v-if="showResults" :items="searchResults" :fields="tableFields">
-            <template #cell(artworkUrl60)="data">
-                <img :src=data.value>
-            </template>
-            <template #cell(trackName)="data">
-                <b>{{ data.value }}</b><br>
-                <i>{{data.item.collectionName}}</i><br>
-                {{data.item.artistName}}
-            </template>
-            <template #cell(add)="data">
-                <b-button variant="info" @click="queueTrack(data.item.trackId)">
-                    <i class="fas fa-play-circle"></i>
-                </b-button>
-            </template>
-        </b-table>
+  <div>
+    <q-input bottom-slots v-model="searchTerm" v-on:keyup.enter="search" label="Search" dense>
+    <template v-slot:prepend>
+        <q-icon name="library_music" />
+    </template>
+    <template v-slot:append>
+        <q-icon name="close" @click="searchTerm = ''" class="cursor-pointer" />
+    </template>
+    <template v-slot:after>
+        <q-btn round dense flat icon="send" @click="search" />
+    </template>
+    </q-input>
+    <q-table
+    v-show="showResults"
+    title="Results"
+    :data="searchResults"
+    :columns="columns"
+    row-key="trackId"
+    class="table-responsive"
+    :pagination={rowsPerPage:0}
+    >
+        <template v-slot:body-cell-artwork="data">
+            <q-td :props="data">
+                <div>
+                    <q-img :src="data.row.artworkUrl100" height="60px" width="60px"/>
+                </div>
+            </q-td>
+        </template>
+        <template v-slot:body-cell-trackName="data">
+            <q-td style="white-space: normal" :props="data" @click="selectTrack(data.row)">
+                <div>
+                    <b>{{data.row.trackName}}</b><br>
+                    <i>{{data.row.collectionName}}</i><br>
+                    {{data.row.artistName}}
+                </div>
+            </q-td>
+        </template>
+    </q-table>
+    <q-dialog v-model="card" >
+      <q-card class="my-card" style="width:300px;max-width=300px">
+        <q-img :src="selectedTrack.artworkUrl100" />
+        <q-card-section>
+          <div class="row no-wrap items-center">
+            <div class="col ellipsis" style="white-space: normal">
+                <b>{{selectedTrack.trackName}}</b><br>
+                <i>{{selectedTrack.collectionName}}</i><br>
+                {{selectedTrack.artistName}}<br>
+                <sub>Release Date: {{selectedTrack.releaseDate | formatDate}}</sub>
+            </div>
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat color="primary" label="Queue this Track" @click="queueTrack(selectedTrack.trackId)" />
+          <q-btn v-close-popup flat color="primary" icon="close" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -31,40 +70,18 @@ export default {
             searchTerm: "",
             searchResults: [],
             showResults: false,
-            tableFields: [
-                {
-                    key: 'artworkUrl60',
-                    label: 'Art',
-                    tdClass: 'tableButtonCell',
-                    thClass: 'tableHeader'
-                },
-                {
-                    key: 'trackName',
-                    label: 'Track',
-                    tdClass: "tableText",
-                },
-                // {
-                //     key: 'collectionName',
-                //     label: 'Album'
-                // },
-                // {
-                //     key: 'artistName',
-                //     label: 'Artist',
-                //     tdClass: "tableText"
-                // },
-                {
-                    key: 'Add',
-                    label: 'Add',
-                    tdClass: "tableButtonCell",
-                    thClass: 'tableHeader'
-                },
-            ]
+            columns: [
+                {name: "artwork", label: "Art", align:"left", headerStyle: 'max-width: 60px'},
+                {name: "trackName", label: "Track", align:"left", headerStyle: 'max-width: 100px'}
+            ],
+            selectedTrack:{},
+            carousel: false,
+            card: false,
         }
     },
     methods: {
         search() {
             axios.get("https://itunes.apple.com/search?term=" + this.searchTerm +"&entity=musicTrack&attribute=artistTerm").then(resp => {
-                console.log(resp.data.results);
                 this.searchResults = resp.data.results;
                 this.showResults = true
             }).catch(err => {
@@ -77,26 +94,18 @@ export default {
             this.showResults = false;
             this.testmethod();
         },
-        queueTrack(id) {
-            console.log("Queue Track - " + id);
+        selectTrack(data) {
+            this.selectedTrack = data;
+            this.card = true;
         },
-        testmethod(){
-            this.$store.commit('increment');
-            console.log(this.$store.state.counter);
+        queueTrack(id){
+            //MORE TO ADD HERE!!
+            console.log("Queueing Track " + id)
         }
     }
-
 }
 </script>
 
 <style>
-    .tableText {
-        font-size: 14px;
-    }
-    .tableButtonCell {
-        vertical-align: middle !important;
-    }
-    .tableHeader {
-        text-align: center;
-    }
+
 </style>

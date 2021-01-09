@@ -1,52 +1,73 @@
 <template>
-  <div id="sidebar" class="sidebar_top">
-    <b-navbar toggleable="sm" type="dark" variant="info">
-      <b-button variant="info" v-b-toggle.sidebar-1>
-        <i class="fas fa-list-ul"></i>
-        </b-button>
-      <b-sidebar id="sidebar-1" title="Menu" bg-variant="dark" text-variant="light" shadow width="50%" z-index="10">
-        <div class="px-3 py-2">
-          <p><router-link to="/">Home</router-link></p>
-          <p v-show="jukeboxOnline"><router-link to="/Search">Search</router-link></p>
-          <p></p>
-          <p></p>
-          <p v-show="debug"><router-link to="/Debug">Debug</router-link></p>
-        </div>
-        <template #footer="{}">
-       <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
-        <strong class="mr-auto">Debug Mode</strong>
-        <b-form-checkbox v-model="debug" switch>
-        </b-form-checkbox>
-       </div>
-      </template>
-      </b-sidebar>
-      <b-navbar-brand class="ml-auto">Jukebox v0.1 <b-badge v-show="!wsServerOnline" variant="danger">offline</b-badge></b-navbar-brand>
-    </b-navbar>
+  <div>
+    <q-header elevated class="bg-black">
+      <q-toolbar>
+        <q-btn flat @click="drawer = !drawer" round dense icon="menu"></q-btn>
+        <q-toolbar-title class="text-right">Jukebox</q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+    <q-drawer
+        v-model="drawer"
+        :width="200"
+        :breakpoint="500"
+        overlay
+        bordered
+      >
+        <q-scroll-area class="fit" style="margin-top: 200px">
+            <q-list>
+                <q-item clickable v-ripple to="/">
+                    <q-item-section avatar>
+                        <q-icon name="home"></q-icon>
+                    </q-item-section>
+                    <q-item-section>Home</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple to="search">
+                  <q-item-section avatar>
+                      <q-icon name="search"></q-icon>
+                  </q-item-section>
+                  <q-item-section>Search</q-item-section>
+                </q-item>
+                <q-separator></q-separator>
+                <q-item v-show="debugSwitch" clickable v-ripple><q-item-section avatar>
+                        <q-icon name="bug_report"></q-icon>
+                    </q-item-section>
+                    <q-item-section>Debug</q-item-section>
+                </q-item>
+            </q-list>
+        </q-scroll-area>
+        <img class="absolute-top drawLogo" src="@/assets/jukebox.jpeg">
+          <div class="absolute-bottom bg-transparent">
+            <q-separator></q-separator>
+            <div class="on-right text-bold">Jukebox - {{version}}</div>
+            <q-toggle class="on-right" v-model="debugSwitch" color="red" label="Debug" left-label></q-toggle>
+          </div>
+    </q-drawer>
   </div>
 </template>
 
 <script>
 export default {
-  
-  name: "Sidebar",
-  computed: {
-    debug: {
-      get() {return this.$store.getters.getDebug},
-      set(value) {this.$store.dispatch('setDebug', value)}
-    },
-    wsServerOnline: {
-      get() { return this.$store.getters.getWSStatus},
-    },
-    jukeboxOnline: {
-      get() {return this.$store.getters.getJukeboxActive}
+    name: 'Sidebar',
+    data () {
+        return {
+         drawer: false,
     }
+  },
+  computed: {
+      debugSwitch: {
+          get() { return this.$store.getters.getDebug },
+          set(value) {this.$store.dispatch('setDebug', value)}
+      },
+      version: {
+          get() { return this.$store.getters.getAppVersion }
+      }
   }
 }
 </script>
 
 <style>
-    .sidebar_top{
-      position: sticky;
-      top: 0
-    }
+ .drawLogo {
+    height: 190px;
+    width: 200px; 
+ }
 </style>

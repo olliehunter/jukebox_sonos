@@ -1,18 +1,16 @@
 <template>
- <div>
-   <q-layout class="q-pa-md">
-    <Sidebar></Sidebar>
-    <q-page-container >
-      <router-view></router-view>
-    </q-page-container>
-   </q-layout>
+  <div id="app" class="q-pa-md">
+    <q-layout view="hHh Lpr lff">
+      <Sidebar></Sidebar>
+    <!-- <router-view/>
+     -->
+    </q-layout>
   </div>
 </template>
-
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 export default {
-  name: 'LayoutDefault',
+  name: "RootApp",
   components: {
     Sidebar
   },
@@ -58,7 +56,9 @@ export default {
     }
   }
 }
+
 </script>
 
 <style>
+
 </style>

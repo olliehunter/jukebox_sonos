@@ -2,17 +2,14 @@
   "name": "sonos-http-api",
   "version": "1.6.9",
   "description": "A simple node app for controlling a Sonos system with basic HTTP requests",
-  "scripts": {
-    "depinstall": "npm install && cd client && npm install",
-    "buildserve": "cd client && npm run build && cd .. && node server.js",
-    "start": "node server.js",
-    "lint": "eslint lib"
-  },
   "author": "Jimmy Shimizu <jimmy@shimizu.se>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jishi/node-sonos-http-api.git"
+  "scripts": {
+    "lint": "eslint lib",
+    "buildserve": "cd client && npm run build && cd .. && node server.js",
+    "depinstall": "npm install && cd client && npm install",
+    "start": "node server.js"
   },
+  "main": "lib/sonos-http-api.js",
   "dependencies": {
     "anesidora": "^1.2.0",
     "aws-sdk": "^2.12.0",
@@ -31,15 +28,20 @@
     "wav-file-info": "0.0.8",
     "ws": "^7.4.1"
   },
+  "devDependencies": {
+    "@vue/cli-plugin-router": "^4.5.10",
+    "@vue/cli-plugin-vuex": "^4.5.10",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb-base": "^12.0.1",
+    "eslint-plugin-import": "^2.7.0"
+  },
   "engines": {
     "node": ">=4.0.0",
     "npm": "^2.0.0"
   },
-  "main": "lib/sonos-http-api.js",
   "license": "MIT",
-  "devDependencies": {
-    "eslint": "^4.8.0",
-    "eslint-config-airbnb-base": "^12.0.1",
-    "eslint-plugin-import": "^2.7.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jishi/node-sonos-http-api.git"
   }
 }
