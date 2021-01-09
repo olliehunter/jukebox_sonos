@@ -8,10 +8,10 @@ export default new Vuex.Store({
     config: {
       version: "0.0.0.2",
       name: "Jukebox",
-      wsServer: "localhost" || process.env.WSSERVER,
+      wsServer: "homeassistant" || process.env.WSSERVER,
       wsPort: 3001 || process.env.WSPORT,
       wsConnected: false,
-      apiServer: "localhost" || process.env.APISERVER,
+      apiServer: "homeassistant" || process.env.APISERVER,
       apiPort: 5005 || process.env.APIPORT
     },
     jukebox: {
